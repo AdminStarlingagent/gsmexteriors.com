@@ -329,7 +329,7 @@ footer{background:var(--ink);color:#9FC4CF;padding:56px 0 90px;font-size:.92rem}
       <h3 data-i18n="form.title">Get your free quote</h3>
       <p class="qc-sub" data-i18n="form.sub">Tell us what needs cleaning. We'll text you a price — usually the same day.</p>
       <form id="quoteForm" novalidate>
-        <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div>
           <label for="fName" data-i18n="form.name">Full name</label>
           <input id="fName" name="name" type="text" autocomplete="name" required>
@@ -363,8 +363,8 @@ footer{background:var(--ink);color:#9FC4CF;padding:56px 0 90px;font-size:.92rem}
           </select>
         </div>
         <div class="qc-full">
-          <label for="fZip" data-i18n="form.zip">ZIP code</label>
-          <input id="fZip" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" required>
+          <label for="fAddr" data-i18n="form.address">Property address</label>
+          <input id="fAddr" name="address" type="text" autocomplete="street-address" required>
         </div>
         <div class="qc-full">
           <label for="fMsg" data-i18n="form.msg">Anything else we should know?</label>
@@ -677,7 +677,7 @@ footer{background:var(--ink);color:#9FC4CF;padding:56px 0 90px;font-size:.92rem}
 
 <script>
 /* ============ CONFIG ============ */
-var FORM_EMAIL = "jason.aguirre@jasonhoustonrealty.com"; // <-- form submissions are emailed here via formsubmit.co (change to your GSM inbox)
+var WEB3FORMS_KEY = "3ddd5bca-8154-4da6-8b13-36584c50fa64"; // Web3Forms access key — submissions go to the inbox registered with this key
 
 /* ============ i18n ============ */
 var I18N = {
@@ -690,7 +690,7 @@ en: {
  "hero.p1":"Licensed & insured crews","hero.p2":"Free quotes — usually the same day","hero.p3":"Satisfaction guaranteed — we re-clean if you're not happy",
  "hero.cta1":"Get my free quote","hero.cta2":"Call (832) 853-1964",
  "form.title":"Get your free quote","form.sub":"Tell us what needs cleaning. We'll text you a price — usually the same day.",
- "form.name":"Full name","form.phone":"Phone","form.email":"Email (optional)","form.service":"Service needed","form.type":"Property type","form.zip":"ZIP code","form.msg":"Anything else we should know?","form.submit":"Request my free quote","form.note":"No spam, no pressure. We reach out once with your quote.",
+ "form.name":"Full name","form.phone":"Phone","form.email":"Email (optional)","form.service":"Service needed","form.type":"Property type","form.address":"Property address","form.msg":"Anything else we should know?","form.submit":"Request my free quote","form.note":"No spam, no pressure. We reach out once with your quote.",
  "opt.pw":"Pressure washing","opt.sw":"Soft washing / house wash","opt.rw":"Residential window cleaning","opt.cw":"Commercial window cleaning","opt.roof":"Roof soft wash","opt.gutter":"Gutter cleaning","opt.concrete":"Driveway & concrete","opt.other":"Other home improvement","opt.res":"Residential","opt.com":"Commercial",
  "form.success":"Got it! We'll reach out shortly with your free quote.","form.error":"Something went wrong sending your request. Please call or text us at (832) 853-1964.",
  "trust.t1":"Licensed & insured","trust.t2":"Locally owned & operated","trust.t3":"Eco-safe detergents","trust.t4":"Re-clean guarantee",
@@ -738,7 +738,7 @@ es: {
  "hero.p1":"Equipos con licencia y asegurados","hero.p2":"Cotizaciones gratis — normalmente el mismo día","hero.p3":"Satisfacción garantizada — volvemos a limpiar si no quedas contento",
  "hero.cta1":"Quiero mi cotización gratis","hero.cta2":"Llama al (832) 853-1964",
  "form.title":"Recibe tu cotización gratis","form.sub":"Cuéntanos qué necesitas limpiar. Te mandamos el precio por texto — normalmente el mismo día.",
- "form.name":"Nombre completo","form.phone":"Teléfono","form.email":"Correo (opcional)","form.service":"Servicio que necesitas","form.type":"Tipo de propiedad","form.zip":"Código postal","form.msg":"¿Algo más que debamos saber?","form.submit":"Pedir mi cotización gratis","form.note":"Sin spam ni presión. Te contactamos una vez con tu cotización.",
+ "form.name":"Nombre completo","form.phone":"Teléfono","form.email":"Correo (opcional)","form.service":"Servicio que necesitas","form.type":"Tipo de propiedad","form.address":"Dirección de la propiedad","form.msg":"¿Algo más que debamos saber?","form.submit":"Pedir mi cotización gratis","form.note":"Sin spam ni presión. Te contactamos una vez con tu cotización.",
  "opt.pw":"Lavado a presión","opt.sw":"Lavado suave de casa","opt.rw":"Ventanas residenciales","opt.cw":"Ventanas comerciales","opt.roof":"Lavado suave de techo","opt.gutter":"Limpieza de canaletas","opt.concrete":"Entrada y concreto","opt.other":"Otra mejora del hogar","opt.res":"Residencial","opt.com":"Comercial",
  "form.success":"¡Listo! Te contactamos pronto con tu cotización gratis.","form.error":"Hubo un problema al enviar tu solicitud. Llámanos o mándanos un texto al (832) 853-1964.",
  "trust.t1":"Con licencia y asegurados","trust.t2":"Negocio local","trust.t3":"Detergentes eco-seguros","trust.t4":"Garantía de re-limpieza",
@@ -827,35 +827,36 @@ document.getElementById("quoteForm").addEventListener("submit", function(e){
   e.preventDefault();
   var f = e.target;
   var msg = document.getElementById("formMsg");
-  if (f._honey.value) return; // bot
-  if (!f.name.value.trim() || !f.phone.value.trim() || !f.zip.value.trim()){
+  if (f.botcheck.checked) return; // bot
+  if (!f.name.value.trim() || !f.phone.value.trim() || !f.address.value.trim()){
     msg.className = "form-msg err";
-    msg.textContent = currentLang === "es" ? "Por favor completa nombre, teléfono y código postal." : "Please fill in your name, phone and ZIP code.";
+    msg.textContent = currentLang === "es" ? "Por favor completa nombre, teléfono y la dirección de la propiedad." : "Please fill in your name, phone and property address.";
     return;
   }
   var btn = f.querySelector("button[type=submit]");
   btn.disabled = true;
   var payload = {
+    access_key: WEB3FORMS_KEY,
+    subject: "New quote request — GSM Exteriors website",
+    from_name: "GSM Exteriors Website",
     name: f.name.value.trim(),
     phone: f.phone.value.trim(),
     email: f.email.value.trim(),
     service: f.service.value,
     property_type: f.property_type.value,
-    zip: f.zip.value.trim(),
+    address: f.address.value.trim(),
     message: f.message.value.trim(),
     language: currentLang === "es" ? "Spanish" : "English",
-    _subject: "New quote request — GSM Exteriors website",
-    _template: "table",
-    _captcha: "false"
+    botcheck: ""
   };
-  fetch("https://formsubmit.co/ajax/" + FORM_EMAIL, {
+  fetch("https://api.web3forms.com/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Accept": "application/json" },
     body: JSON.stringify(payload)
   }).then(function(r){
-    if (!r.ok) throw new Error("send failed");
     return r.json();
-  }).then(function(){
+  }).then(function(d){
+    if (!d.success) throw new Error("send failed");
     msg.className = "form-msg ok";
     msg.textContent = I18N[currentLang]["form.success"];
     f.reset();
